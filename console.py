@@ -3,9 +3,9 @@
 """Defines the HBnB console"""
 
 import cmd
-import json
+import models
 from models.base_model import BaseModel
-from models import storage
+"""entry point for hbnb console"""
 
 
 class HBNBCommand(cmd.Cmd):
@@ -58,13 +58,13 @@ class HBNBCommand(cmd.Cmd):
         elif not self.clslist.get(clsname):
             print("** class doesn't exist **")
         else:
-            k = clsname + "." + objid
+            k = clsname + "." + objid;
             obj = models.storage.all().get(k)
             if not obj:
                 print('** no instance found **')
             else:
                 print(obj)
-    
+
     def do_destroy(self, arg):
         """destroy instance based on id"""
         clsname, objid = None, None
@@ -87,7 +87,18 @@ class HBNBCommand(cmd.Cmd):
             else:
                 del models.storage.all()[k]
                 models.storage.save()
-    
+
+    def do_all(self, arg):
+        """Prints all instances based or not on the class name"""
+        if not arg:
+            print([str(v) for k, v in models.storage.all().items()])
+        else:
+            if not self.clslist.get(arg):
+                print("** class doesn't exist **")
+                return False
+            print([str(v) for k, v in models.storage.all().items()
+                   if type(v) is self.clslist.get(arg)])
+
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
         clsname, objid, attrname, attrval = None, None, None, None
@@ -118,18 +129,17 @@ class HBNBCommand(cmd.Cmd):
             else:
                 obj.__setattr__(attrname,
                                 type(obj.__getattribute__(attrname))(attrval))
-    def do_all(self, arg):
-        """Prints all instances based or not on the class name
-        """
-        if not arg:
-            print([str(v) for k, v in models.storage.all().items()])
-        else:
-            if not self.clslist.get(arg):
-                print("** class doesn't exist **")
-                return False
-            print([str(v) for k, v in models.storage.all().items()
-                   if type(v) is self.clslist.get(arg)])
 
-    
+    def do_quit(self, arg):
+        """Quit command to exit the program
+        """
+        return True
+
+    def do_EOF(self, arg):
+        """EOF to exit the program
+        """
+        print()
+        return True
+
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
