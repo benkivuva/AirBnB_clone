@@ -4,12 +4,13 @@
 
 from uuid import uuid4
 from datetime import date, datetime
+import models
 
 
 class BaseModel:
     """The super class"""
     def __init__(self, *args, **kwargs):
-        """Initializing the base model"""    
+        """Initializing the base model"""
         if len(kwargs) != 0:
             for key, value in kwargs.items():
                 if key == "__class__":
@@ -22,6 +23,7 @@ class BaseModel:
             self.id = str(uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
+            models.storage.new(self)
 
     def __str__(self):
         """sets the print behaviour of the base model"""
@@ -31,6 +33,7 @@ class BaseModel:
     def save(self):
         """updates up_dated with current datetime"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """returns a dictionary containing all key/values of __dict__"""
