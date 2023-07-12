@@ -4,6 +4,12 @@
 
 import json
 from models.base_model import BaseModel
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from models.user import User
 
 
 class FileStorage:
@@ -48,14 +54,26 @@ class FileStorage:
     def reload(self):
         """
         Deserializes the JSON file and updates the objects dictionary.
-        If the JSON file (__file_path) exists, it reads file and loads objects
+        If the JSON file (__file_path) exists, it reads the file and loads objects.
         If the file doesn't exist, it does nothing.
         """
+        clslist = {
+            'BaseModel': BaseModel,
+            'State': State,
+            'City': City,
+            'Amenity': Amenity,
+            'Place': Place,
+            'Review': Review,
+            'User': User
+        }
         try:
-            with open(self.__file_path, "r") as file:
-                obj_dict = json.load(file)
-                for key, value in obj_dict.items():
-                    class_name, obj_id = key.split(".")
-                    self.__objects[key] = globals()[class_name](**value)
+            with open(self.__file_path, 'r', encoding='utf-8') as f:
+                temp = json.load(f)
+                for k, v in temp.items():
+                    class_name = v['__class__']
+                    if class_name in clslist:
+                        cls = clslist[class_name]
+                        obj = cls(**v)
+                        self.__objects[k] = obj
         except FileNotFoundError:
             pass
