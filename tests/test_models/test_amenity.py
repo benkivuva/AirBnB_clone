@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Unit tests for BaseModel class"""
+"""Unit tests for Amenity class"""
 
 import unittest
 import models
@@ -10,7 +10,7 @@ import os
 
 
 class Test_Amenity(unittest.TestCase):
-    """Test casess for BaseModel class"""
+    """Test casess for Amenity class"""
 
     def setUp(self):
         """Set up the env before each test case"""
@@ -77,11 +77,11 @@ class Test_Amenity(unittest.TestCase):
         self.assertEqual(am.updated_at, date)
 
     def test_id_is_str(self):
-        """checks if id data type"""
+        """checks the id data type"""
         self.assertEqual(str, type(Amenity().id))
 
     def test_id_is_unique(self):
-        """test if id generated are unique"""
+        """test if ids generated are unique"""
         user1 = Amenity()
         user2 = Amenity()
         self.assertNotEqual(user1.id, user2.id)
@@ -119,7 +119,7 @@ class Test_Amenity(unittest.TestCase):
         self.assertNotEqual(am1.__str__(), am2.__str__())
 
     def test_save(self):
-        """tests the effective of timestamp updates"""
+        """tests the effectivity of timestamp updates"""
         am = Amenity()
         sleep(0.1)
         update = am.updated_at
@@ -127,7 +127,7 @@ class Test_Amenity(unittest.TestCase):
         self.assertLess(update, am.updated_at)
 
     def test_two_saves(self):
-        """tests the effectivity of diffrent timestamps updates"""
+        """tests the effectivity of different timestamps updates"""
         am = Amenity()
         sleep(0.1)
         upadte1 = am.updated_at
