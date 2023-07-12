@@ -3,6 +3,7 @@
 
 
 import json
+from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -16,7 +17,7 @@ class FileStorage:
 
     def all(self):
         """
-        Returns the dictionary of all the objects.
+        Returns the dictionary of all objects.
 
         Returns:
             dict: A dictionary containing all objects.
