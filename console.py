@@ -13,24 +13,12 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) '
     clslist = {'BaseModel': BaseModel}
 
-    def do_quit(self, arg):
-        """
-        Quit command to exit the program
-        """
-        return True
-
-    def do_EOF(self, arg):
-        """
-        EOF command to exit the program
-        """
-        return True
-
     def emptyline(self):
         """
         Do nothing when an empty line is entered.
         """
         pass
-    
+
     def do_create(self, clsname=None):
         """Creates a new instance of BaseModel, saves it and prints the id
         """
@@ -58,7 +46,7 @@ class HBNBCommand(cmd.Cmd):
         elif not self.clslist.get(clsname):
             print("** class doesn't exist **")
         else:
-            k = clsname + "." + objid;
+            k = clsname + "." + objid
             obj = models.storage.all().get(k)
             if not obj:
                 print('** no instance found **')
@@ -80,7 +68,7 @@ class HBNBCommand(cmd.Cmd):
         elif not self.clslist.get(clsname):
             print("** class doesn't exist **")
         else:
-            k = clsname + "." + objid;
+            k = clsname + "." + objid
             obj = models.storage.all().get(k)
             if not obj:
                 print('** no instance found **')
@@ -122,7 +110,7 @@ class HBNBCommand(cmd.Cmd):
         elif not self.clslist.get(clsname):
             print("** class doesn't exist **")
         else:
-            k = clsname + "." + objid;
+            k = clsname + "." + objid
             obj = models.storage.all().get(k)
             if not obj:
                 print('** no instance found **')
@@ -140,6 +128,7 @@ class HBNBCommand(cmd.Cmd):
         """
         print()
         return True
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
