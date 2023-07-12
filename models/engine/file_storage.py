@@ -8,7 +8,7 @@ from models.base_model import BaseModel
 
 class FileStorage:
     """
-    This class provides a file storage module for serializing instances
+    This class provides a file storage module for serializing instances 
     to a JSON file and deserializing JSON files to instances.
     """
 
