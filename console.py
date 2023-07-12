@@ -10,6 +10,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+from models.user import User
 """entry point for hbnb console"""
 
 
@@ -17,7 +18,8 @@ class HBNBCommand(cmd.Cmd):
     """ hbnb shell """
     prompt = '(hbnb) '
     clslist = {'BaseModel': BaseModel, 'State': State, 'City': City,
-               'Amenity': Amenity, 'Place': Place, 'Review': Review}
+               'Amenity': Amenity, 'Place': Place, 'Review': Review,
+               'User': User}
     def emptyline(self):
         """
         Do nothing when an empty line is entered.
@@ -94,7 +96,9 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id"""
+        from datetime import datetime
         clsname, objid, attrname, attrval = None, None, None, None
+        updatetime = datetime.now()
         args = arg.split(' ')
         if len(args) > 0:
             clsname = args[0]
@@ -122,7 +126,7 @@ class HBNBCommand(cmd.Cmd):
             else:
                 obj.__setattr__(attrname,
                                 type(obj.__getattribute__(attrname))(attrval))
-
+                obj.updated_at = updatetime
     def do_quit(self, arg):
         """Quit command to exit the program
         """
