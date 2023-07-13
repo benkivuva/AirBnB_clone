@@ -66,16 +66,14 @@ class FileStorage:
             'Review': Review,
             'User': User
         }
+
         try:
-            with open(self.__file_path, 'r', encoding='utf-8') as f:
-                temp = json.load(f)
-                for k, v in temp.items():
-                    class_name = v.get('__class__')
-                    if class_name in clslist:
-                        cls = clslist[class_name]
-                        obj = cls(**v)
-                        self.__objects[k] = obj
-        except (FileNotFoundError, json.JSONDecodeError):
+            with open(self.__file_path, "r") as file:
+                obj_dict = json.load(file)
+                for key, value in obj_dict.items():
+                    class_name, obj_id = key.split(".")
+                    self.__objects[key] = globals()[class_name](**value)
+        except FileNotFoundError:
             pass
 
 
