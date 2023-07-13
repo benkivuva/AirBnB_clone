@@ -6,7 +6,7 @@ from unittest.mock import create_autospec
 from uuid import UUID
 import models
 import unittest
-import pycodestyles
+import pycodestyle
 import sys
 import io
 import json
