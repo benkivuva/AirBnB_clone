@@ -9,8 +9,8 @@ from time import sleep
 import os
 
 
-class Test_Review(unittest.TestCase):
-    """Test casess for Place class"""
+class Test_State(unittest.TestCase):
+    """Test casess for State class"""
 
     def setUp(self):
         """Set up the env before each test case"""
