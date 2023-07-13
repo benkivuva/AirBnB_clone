@@ -54,7 +54,7 @@ class FileStorage:
     def reload(self):
         """
         Deserializes the JSON file and updates the objects dictionary.
-        If the JSON file (__file_path) exists, it reads the file and loads objects.
+        If the JSON file (__file_path) exists it reads the file and loads objects.
         If the file doesn't exist, it does nothing.
         """
         clslist = {
@@ -70,10 +70,15 @@ class FileStorage:
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 temp = json.load(f)
                 for k, v in temp.items():
-                    class_name = v['__class__']
+                    class_name = v.get('__class__')
                     if class_name in clslist:
                         cls = clslist[class_name]
                         obj = cls(**v)
                         self.__objects[k] = obj
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             pass
+
+
+if __name__ == "__main__":
+    storage = FileStorage()
+    storage.reload()

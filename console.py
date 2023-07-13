@@ -11,6 +11,8 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 from models.user import User
+from datetime import datetime
+from shlex import shlex
 """entry point for hbnb console"""
 
 
@@ -20,22 +22,20 @@ class HBNBCommand(cmd.Cmd):
     clslist = {'BaseModel': BaseModel, 'State': State, 'City': City,
                'Amenity': Amenity, 'Place': Place, 'Review': Review,
                'User': User}
+
     def emptyline(self):
-        """
-        Do nothing when an empty line is entered.
-        """
+        """empty line"""
         pass
 
     def do_create(self, clsname=None):
-        """Creates a new instance of BaseModel, saves it and prints the id
-        """
+        """Creates a new instance of BaseModel, saves it and prints the id"""
         if not clsname:
             print('** class name missing **')
         elif not self.clslist.get(clsname):
             print('** class doesn\'t exist **')
         else:
             obj = self.clslist[clsname]()
-            obj.save()
+            models.storage.save()
             print(obj.id)
 
     def do_show(self, arg):
@@ -61,7 +61,8 @@ class HBNBCommand(cmd.Cmd):
                 print(obj)
 
     def do_destroy(self, arg):
-        """destroy instance based on id"""
+        """destroy instance based on id
+        """
         clsname, objid = None, None
         args = arg.split(' ')
         if len(args) > 0:
@@ -84,27 +85,23 @@ class HBNBCommand(cmd.Cmd):
                 models.storage.save()
 
     def do_all(self, arg):
+        """Prints all instances based or not on the class name
         """
-        Prints all instances or instances of a specific class.
-        """
-        if arg:
-            words = arg.split(' ')
-            if words[0] not in models.storage.classes():
-                print("** class doesn't exist **")
-            else:
-                instance_list = [str(obj) for key, obj in models.storage.all().items()
-                                if type(obj).__name__ == words[0]]
-                print(instance_list)
+        if not arg:
+            print([str(v) for k, v in models.storage.all().items()])
         else:
-            all_instances = [str(obj) for key, obj in models.storage.all().items()]
-            print(all_instances)
+            if not self.clslist.get(arg):
+                print("** class doesn't exist **")
+                return False
+            print([str(v) for k, v in models.storage.all().items()
+                   if type(v) is self.clslist.get(arg)])
 
     def do_update(self, arg):
-        """Updates an instance based on the class name and id"""
-        from datetime import datetime
+        """Updates an instance based on the class name and id
+        """
         clsname, objid, attrname, attrval = None, None, None, None
         updatetime = datetime.now()
-        args = arg.split(' ')
+        args = arg.split(' ', 3)
         if len(args) > 0:
             clsname = args[0]
         if len(args) > 1:
@@ -112,7 +109,7 @@ class HBNBCommand(cmd.Cmd):
         if len(args) > 2:
             attrname = args[2]
         if len(args) > 3:
-            attrval = args[3]
+            attrval = list(shlex(args[3]))[0].strip('"')
         if not clsname:
             print('** class name missing **')
         elif not objid:
@@ -129,9 +126,14 @@ class HBNBCommand(cmd.Cmd):
             if not obj:
                 print('** no instance found **')
             else:
-                obj.__setattr__(attrname,
-                                type(obj.__getattribute__(attrname))(attrval))
+                if hasattr(obj, attrname):
+                    attrval = type(getattr(obj, attrname))(attrval)
+                else:
+                    attrval = self.getType(attrval)(attrval)
+                setattr(obj, attrname, attrval)
                 obj.updated_at = updatetime
+                models.storage.save()
+
     def do_quit(self, arg):
         """Quit command to exit the program
         """
@@ -140,8 +142,81 @@ class HBNBCommand(cmd.Cmd):
     def do_EOF(self, arg):
         """EOF to exit the program
         """
-        print()
         return True
+
+    def default(self, line):
+        """handle class commands"""
+        l = line.split('.', 1)
+        if len(l) < 2:
+            print('*** Unknown syntax:', l[0])
+            return False
+        clsname, line = l[0], l[1]
+        if clsname not in list(self.clslist.keys()):
+            print('*** Unknown syntax: {}.{}'.format(clsname, line))
+            return False
+        l = line.split('(', 1)
+        if len(l) < 2:
+            print('*** Unknown syntax: {}.{}'.format(clsname, l[0]))
+            return False
+        mthname, args = l[0], l[1].rstrip(')')
+        if mthname not in ['all', 'count', 'show', 'destroy', 'update']:
+            print('*** Unknown syntax: {}.{}'.format(clsname, line))
+            return False
+        if mthname == 'all':
+            self.do_all(clsname)
+        elif mthname == 'count':
+            print(self.count_class(clsname))
+        elif mthname == 'show':
+            self.do_show(clsname + " " + args.strip('"'))
+        elif mthname == 'destroy':
+            self.do_destroy(clsname + " " + args.strip('"'))
+        elif mthname == 'update':
+            lb, rb = args.find('{'), args.find('}')
+            d = None
+            if args[lb:rb + 1] != '':
+                d = eval(args[lb:rb + 1])
+            l = args.split(',', 1)
+            objid, args = l[0].strip('"'), l[1]
+            if d and type(d) is dict:
+                self.handle_dict(clsname, objid, d)
+            else:
+                from shlex import shlex
+                args = args.replace(',', ' ', 1)
+                l = list(shlex(args))
+                l[0] = l[0].strip('"')
+                self.do_update(" ".join([clsname, objid, l[0], l[1]]))
+
+    def handle_dict(self, clsname, objid, d):
+        """handle dictionary update"""
+        for k, v in d.items():
+            self.do_update(" ".join([clsname, objid, str(k), str(v)]))
+
+    def postloop(self):
+        """print new line after each loop"""
+        print()
+
+    @staticmethod
+    def count_class(clsname):
+        """count number of objects of type clsname"""
+        c = 0
+        for k, v in models.storage.all().items():
+            if type(v).__name__ == clsname:
+                c += 1
+        return (c)
+
+    @staticmethod
+    def getType(attrval):
+        """return the type of the input string"""
+        try:
+            int(attrval)
+            return (int)
+        except ValueError:
+            pass
+        try:
+            float(attrval)
+            return (float)
+        except ValueError:
+            return (str)
 
 
 if __name__ == "__main__":
