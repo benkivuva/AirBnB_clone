@@ -8,7 +8,7 @@ from models.base_model import BaseModel
 
 class FileStorage:
     """
-    This class provides a file storage module for serializing instances 
+    This class provides a file storage module for serializing instances
     to a JSON file and deserializing JSON files to instances.
     """
 
@@ -51,11 +51,12 @@ class FileStorage:
         If the JSON file (__file_path) exists, it reads file and loads objects
         If the file doesn't exist, it does nothing.
         """
+
         try:
-            with open(self.__file_path, "r") as file:
-                obj_dict = json.load(file)
-                for key, value in obj_dict.items():
-                    class_name, obj_id = key.split(".")
-                    self.__objects[key] = globals()[class_name](**value)
-        except FileNotFoundError:
+            with open(self.__file_path, "r", encoding="UTF-8") as f:
+                obj = json.loads(f.read())
+            for k, v in obj.items():
+                class_name = k.split('.')[0]
+                self.__objects[k] = eval(class_name)(**v)
+        except BaseException:
             pass
