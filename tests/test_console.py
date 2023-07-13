@@ -57,7 +57,7 @@ class Test_01_Basic(unittest.TestCase):
         self.assertEqual('', self.out.getvalue())
 
     def test_02_quit(self):
-        """test quit command"""
+        """test quit command."""
         self.assertTrue(self.c.onecmd("quit"))
         self.assertTrue(self.c.onecmd("quit some random arguments"))
         self.assertFalse(self.c.onecmd("Quit"))
