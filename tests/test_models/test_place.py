@@ -18,7 +18,7 @@ class Test_Review(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        self.place = None
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +76,23 @@ class Test_Review(unittest.TestCase):
         self.assertEqual(pl.created_at, date)
         self.assertEqual(pl.updated_at, date)
 
+    def test_attributes_initialization(self):
+        """tests atrr initialization"""
+        self.assertEqual(self.place.city_id, "")
+        self.assertEqual(self.place.user_id, "")
+        self.assertEqual(self.place.name, "")
+        self.assertEqual(self.place.description, "")
+        self.assertEqual(self.place.number_rooms, 0)
+        self.assertEqual(self.place.number_bathrooms, 0)
+        self.assertEqual(self.place.max_guest, 0)
+        self.assertEqual(self.place.price_by_night, 0)
+        self.assertEqual(self.place.latitude, 0.0)
+        self.assertEqual(self.place.longitude, 0.0)
+        self.assertEqual(self.place.amenity_ids, [])
+        self.assertTrue(hasattr(self.place, "id"))
+        self.assertTrue(hasattr(self.place, "created_at"))
+        self.assertTrue(hasattr(self.place, "updated_at"))
+
     def test_id_is_str(self):
         """checks if id data type"""
         self.assertEqual(str, type(Place().id))
@@ -118,6 +135,14 @@ class Test_Review(unittest.TestCase):
         pl2 = Place()
         self.assertNotEqual(pl1.__str__(), pl2.__str__())
 
+    def test__str__method(self):
+        """tests the str method"""
+        pl_str = str(self.place)
+        self.assertIn("[Place]", pl_str)
+        self.assertIn("id", pl_str)
+        self.assertIn("created_at", pl_str)
+        self.assertIn("updated_at", pl_str)
+
     def test_save(self):
         """tests the effectivity of timestamp updates"""
         pl = Place()
@@ -145,6 +170,13 @@ class Test_Review(unittest.TestCase):
         plid = "Place." + pl.id
         with open("file.json", "r") as file:
             self.assertIn(plid, file.read())
+
+    def test_save_method(self):
+        """tests the save() method"""
+        updated_at_1 = self.place.updated_at
+        self.place.save()
+        updated_at_2 = self.place.updated_at
+        self.assertNotEqual(updated_at_1, updated_at_2)
 
     def test_to_dict(self):
         """Tests the expected output"""

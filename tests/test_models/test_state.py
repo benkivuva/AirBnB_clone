@@ -18,7 +18,7 @@ class Test_State(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        self.state = None
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +76,13 @@ class Test_State(unittest.TestCase):
         self.assertEqual(st.created_at, date)
         self.assertEqual(st.updated_at, date)
 
+    def test_attribute_initialization(self):
+        """tests attr initialization"""
+        self.assertEqual(self.state.name, "")
+        self.assertTrue(hasattr(self.state, "id"))
+        self.assertTrue(hasattr(self.state, "created_at"))
+        self.assertTrue(hasattr(self.state, "updated_at"))
+
     def test_id_is_str(self):
         """checks if id data type"""
         self.assertEqual(str, type(State().id))
@@ -118,6 +125,14 @@ class Test_State(unittest.TestCase):
         st2 = State()
         self.assertNotEqual(st1.__str__(), st2.__str__())
 
+    def test__str__method(self):
+        """tests the str() method"""
+        st_str = str(self.state)
+        self.assertIn("[State]", st_str)
+        self.assertIn("id", st_str)
+        self.assertIn("created_at", st_str)
+        self.assertIn("updated_at", st_str)
+
     def test_save(self):
         """tests the effectivity of timestamp updates"""
         st = State()
@@ -145,6 +160,13 @@ class Test_State(unittest.TestCase):
         stid = "State." + st.id
         with open("file.json", "r") as file:
             self.assertIn(stid, file.read())
+
+    def test_save_method(self):
+        """tests the save method"""
+        updated_at_1 = self.state.updated_at
+        self.state.save()
+        updated_at_2 = self.state.updated_at
+        self.assertNotEqual(updated_at_1, updated_at_2)
 
     def test_to_dict(self):
         """Tests the expected output"""

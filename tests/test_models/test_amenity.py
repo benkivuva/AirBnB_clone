@@ -18,7 +18,7 @@ class Test_Amenity(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        self.amenity = None
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +76,13 @@ class Test_Amenity(unittest.TestCase):
         self.assertEqual(am.created_at, date)
         self.assertEqual(am.updated_at, date)
 
+    def test_attrubutes_initialization(self):
+        """tests initialization of attributes"""
+        self.assertEqual(self.amenity.name, "")
+        self.assertTrue(hasattr(self.amenity, "id"))
+        self.assertTrue(hasattr(self.amenity, "created_at"))
+        self.assertTrue(hasattr(self.amenity, "updated_at"))
+
     def test_id_is_str(self):
         """checks the id data type"""
         self.assertEqual(str, type(Amenity().id))
@@ -118,6 +125,14 @@ class Test_Amenity(unittest.TestCase):
         am2 = Amenity()
         self.assertNotEqual(am1.__str__(), am2.__str__())
 
+    def test_str_method(self):
+        """tests the str method"""
+        amenity_string = str(self.amenity)
+        self.assertIn("[Amenity]", amenity_string)
+        self.assertIn("id", amenity_string)
+        self.assertIn("created_at", amenity_string)
+        self.assertIn("updated_at", amenity_string)
+
     def test_save(self):
         """tests the effectivity of timestamp updates"""
         am = Amenity()
@@ -145,6 +160,13 @@ class Test_Amenity(unittest.TestCase):
         amid = "Amenity." + am.id
         with open("file.json", "r") as file:
             self.assertIn(amid, file.read())
+
+    def test_save_method(self):
+        """tests the save method"""
+        updated_at_1 = self.amenity.updated_at
+        self.amenity.save()
+        updated_at_2 = self.amenity.updated_at
+        self.assertNotEqual(updated_at_1, updated_at_2)
 
     def test_to_dict(self):
         """Tests the expected output"""
