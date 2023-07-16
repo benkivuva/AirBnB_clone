@@ -32,7 +32,7 @@ class Test_01_Basic(unittest.TestCase):
         sys.stdout = sys.__stdout__
         try:
             remove('file.json')
-        except:
+        except FileNotFoundError:
             pass
         models.storage._FileStorage__objects.clear()
         self.clearIO()
@@ -91,7 +91,7 @@ class Test_01_Basic(unittest.TestCase):
         try:
             uuid_obj = UUID(testuuid)
             testRes = str(uuid_obj) == testuuid
-        except:
+        except ValueError:
             testRes = False
         self.assertTrue(testRes)
 
@@ -103,22 +103,22 @@ class Test_01_Basic(unittest.TestCase):
         self.assertFalse(self.c.onecmd('create BaseModel'))
         self.clearIO()
         self.assertFalse(self.c.onecmd('all'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 1)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 1)
+        for e in ln:
             self.assertIsInstance(e, str)
         self.assertFalse(self.c.onecmd('create BaseModel'))
         self.assertFalse(self.c.onecmd('create User'))
         self.assertFalse(self.c.onecmd('create State'))
         self.clearIO()
         self.assertFalse(self.c.onecmd('all'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 4)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 4)
+        for e in ln:
             self.assertIsInstance(e, str)
 
     def test_07_all_with_arg(self):
@@ -128,25 +128,25 @@ class Test_01_Basic(unittest.TestCase):
         self.assertFalse(self.c.onecmd('create User'))
         self.clearIO()
         self.assertFalse(self.c.onecmd('all BaseModel'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 2)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 2)
+        for e in ln:
             self.assertIsInstance(e, str)
             self.assertTrue(self.checkObjStrType(e, 'BaseModel'))
         self.assertFalse(self.c.onecmd('all User'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 1)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 1)
+        for e in ln:
             self.assertIsInstance(e, str)
             self.assertTrue(self.checkObjStrType(e, 'User'))
         self.assertFalse(self.c.onecmd('all Amenity'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, [])
+        self.assertEqual(ln, [])
 
     def test_08_update_not_enough_arg(self):
         """test update cmd fail on not enough arguments"""
@@ -335,25 +335,25 @@ class Test_01_Basic(unittest.TestCase):
         self.assertFalse(self.c.onecmd('create User'))
         self.clearIO()
         self.assertFalse(self.c.onecmd('BaseModel.all()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 2)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 2)
+        for e in ln:
             self.assertIsInstance(e, str)
             self.assertTrue(self.checkObjStrType(e, 'BaseModel'))
         self.assertFalse(self.c.onecmd('User.all()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertIsInstance(l, list)
-        self.assertEqual(len(l), 1)
-        for e in l:
+        self.assertIsInstance(ln, list)
+        self.assertEqual(len(ln), 1)
+        for e in ln:
             self.assertIsInstance(e, str)
             self.assertTrue(self.checkObjStrType(e, 'User'))
         self.assertFalse(self.c.onecmd('Amenity.all()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, [])
+        self.assertEqual(ln, [])
 
     def test_53_method_all_fail(self):
         '''test call method all failure'''
@@ -377,25 +377,25 @@ class Test_01_Basic(unittest.TestCase):
         self.assertFalse(self.c.onecmd('create User'))
         self.clearIO()
         self.assertFalse(self.c.onecmd('BaseModel.count()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, 2)
+        self.assertEqual(ln, 2)
         self.assertFalse(self.c.onecmd('User.count()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, 1)
+        self.assertEqual(ln, 1)
         self.assertFalse(self.c.onecmd('Amenity.count()'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, 0)
+        self.assertEqual(ln, 0)
         self.assertFalse(self.c.onecmd('BaseModel.count("a")'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, 2)
+        self.assertEqual(ln, 2)
         self.assertFalse(self.c.onecmd('BaseModel.count(3)'))
-        l = json.loads(self.out.getvalue())
+        ln = json.loads(self.out.getvalue())
         self.clearIO()
-        self.assertEqual(l, 2)
+        self.assertEqual(ln, 2)
 
     def test_55_method_count_fail(self):
         '''test call method count fail'''
@@ -436,9 +436,9 @@ class Test_01_Basic(unittest.TestCase):
         for e in lst:
             testcmd = e[0] + '.show(' + e[1] + ')'
             self.assertFalse(self.c.onecmd(testcmd))
-            l = self.out.getvalue()
+            ln = self.out.getvalue()
             self.clearIO()
-            self.assertTrue(self.checkObjStrType(l, e[0]))
+            self.assertTrue(self.checkObjStrType(ln, e[0]))
 
     def test_57_method_show_failure(self):
         '''test call method show failure'''
@@ -483,7 +483,7 @@ class Test_01_Basic(unittest.TestCase):
         for e in lst:
             testcmd = e[0] + '.destroy(' + e[1] + ')'
             self.assertFalse(self.c.onecmd(testcmd))
-            l = self.out.getvalue()
+            ln = self.out.getvalue()
             self.clearIO()
 
     def test_59_method_destroy_failure(self):
@@ -529,7 +529,7 @@ class Test_01_Basic(unittest.TestCase):
         for e in lst:
             testcmd = e[0] + '.update(' + e[1] + ', "test", "test")'
             self.assertFalse(self.c.onecmd(testcmd))
-            l = self.out.getvalue()
+            ln = self.out.getvalue()
             self.clearIO()
 
     def test_61_method_upd_attr_failure(self):
@@ -576,7 +576,7 @@ class Test_01_Basic(unittest.TestCase):
         for e in lst:
             testcmd = e[0] + '.update(' + e[1] + ", {'test': 'test'})"
             self.assertFalse(self.c.onecmd(testcmd))
-            l = self.out.getvalue()
+            ln = self.out.getvalue()
             self.clearIO()
 
     def test_63_method_upd_dict_failure(self):
@@ -595,6 +595,7 @@ class Test_01_Basic(unittest.TestCase):
     def checkObjStrType(e, t):
         """check if e is a string representation of type 't'"""
         return (e[e.find('['): e.find(']') + 1] == '[' + t + ']')
+
 
 if __name__ == '__main__':
     unittest.main()
