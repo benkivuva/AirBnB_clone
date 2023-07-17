@@ -18,7 +18,11 @@ class Test_User(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        del self.user
+
+    def test_instance_creation(self):
+        """tests if an instance is created the right way"""
+        self.assertIsInstance(self.user, User)
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +80,20 @@ class Test_User(unittest.TestCase):
         self.assertEqual(usr.created_at, date)
         self.assertEqual(usr.updated_at, date)
 
+    def test_attributes(self):
+        """tests the attributes for class user"""
+        self.assertTrue(hasattr(self.user, "email"))
+        self.assertTrue(hasattr(self.user, "password"))
+        self.assertTrue(hasattr(self.user, "first_name"))
+        self.assertTrue(hasattr(self.user, "last_name"))
+
+    def test_attributes_default_values(self):
+        """test the default values of attributes"""
+        self.assertEqual(self.user.email, "")
+        self.assertEqual(self.user.password, "")
+        self.assertEqual(self.user.first_name, "")
+        self.assertEqual(self.user.last_name, "")
+
     def test_id_is_str(self):
         """checks if id data type"""
         self.assertEqual(str, type(User().id))
@@ -114,9 +132,9 @@ class Test_User(unittest.TestCase):
 
     def test__str__(self):
         """tests the string representation"""
-        usr1 = User()
-        usr2 = User()
-        self.assertNotEqual(usr1.__str__(), usr2.__str__())
+        user_str = str(self.user)
+        expec_str = "[User] ({}) {}".format(self.user.id, self.user.__dict__)
+        self.assertEqual(user_str, expec_str)
 
     def test_save(self):
         """tests the effectivity of timestamp updates"""
@@ -187,6 +205,15 @@ class Test_User(unittest.TestCase):
         usr = self.user.to_dict()
         updated_at = usr["updated_at"]
         self.assertEqual(updated_at, self.user.updated_at.isoformat())
+
+    def test_to_dict_method(self):
+        """test to_dict method of user"""
+        user_dict = self.user.to_dict()
+        self.assertIsInstance(user_dict, dict)
+        self.assertEqual(user_dict['__class__'], 'User')
+        self.assertTrue('id' in user_dict)
+        self.assertTrue('created_at' in user_dict)
+        self.assertTrue('updated_at' in user_dict)
 
 
 if __name__ == "__main__":
