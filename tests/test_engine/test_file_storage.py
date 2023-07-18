@@ -26,23 +26,16 @@ class Test_FileStorage(unittest.TestCase):
     @classmethod
     def setUp(self):
         """Sets up the env before each test case"""
-        try:
-            os.rename("file.json", "tmp")
-        except IOError:
-            pass
+        self.file_path = 'file.json'
+        self.storage = FileStorage()
 
     @classmethod
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
         try:
-            os.remove("file.json")
-        except IOError:
+            os.remove(self.file_path)
+        except FileNotFoundError:
             pass
-        try:
-            os.rename("tmp", "file.json")
-        except IOError:
-            pass
-        FileStorage._FileStorage__objects = {}
 
     def test_pep8_conformance_FileStorage(self):
         """Test that file_storage.py file conform to PEP8"""
@@ -203,6 +196,33 @@ class Test_FileStorage(unittest.TestCase):
             for line in r:
                 self.assertEqual(line, "{}")
         self.assertIs(a_storage.reload(), None)
+
+    def test_reload(self):
+        """tests reload method"""
+        basenodel = BaseModel()
+        user = User()
+        state = State()
+        place = Place()
+        city = City()
+        amenity = Amenity()
+        review = Review()
+        models.storage.new(basenodel)
+        models.storage.new(user)
+        models.storage.new(state)
+        models.storage.new(place)
+        models.storage.new(city)
+        models.storage.new(amenity)
+        models.storage.new(review)
+        models.storage.save()
+        models.storage.reload()
+        objs = FileStorage._FileStorage__objects
+        self.assertIn("BaseModel." + basenodel.id, objs)
+        self.assertIn("User." + user.id, objs)
+        self.assertIn("State." + state.id, objs)
+        self.assertIn("Place." + place.id, objs)
+        self.assertIn("City." + city.id, objs)
+        self.assertIn("Amenity." + amenity.id, objs)
+        self.assertIn("Review." + review.id, objs)
 
 
 if __name__ == "__main__":
