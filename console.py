@@ -146,19 +146,19 @@ class HBNBCommand(cmd.Cmd):
 
     def default(self, line):
         """handle class commands"""
-        l = line.split('.', 1)
-        if len(l) < 2:
-            print('*** Unknown syntax:', l[0])
+        ln = line.split('.', 1)
+        if len(ln) < 2:
+            print('*** Unknown syntax:', ln[0])
             return False
-        clsname, line = l[0], l[1]
+        clsname, line = ln[0], ln[1]
         if clsname not in list(self.clslist.keys()):
             print('*** Unknown syntax: {}.{}'.format(clsname, line))
             return False
-        l = line.split('(', 1)
-        if len(l) < 2:
-            print('*** Unknown syntax: {}.{}'.format(clsname, l[0]))
+        ln = line.split('(', 1)
+        if len(ln) < 2:
+            print('*** Unknown syntax: {}.{}'.format(clsname, ln[0]))
             return False
-        mthname, args = l[0], l[1].rstrip(')')
+        mthname, args = ln[0], ln[1].rstrip(')')
         if mthname not in ['all', 'count', 'show', 'destroy', 'update']:
             print('*** Unknown syntax: {}.{}'.format(clsname, line))
             return False
@@ -175,16 +175,16 @@ class HBNBCommand(cmd.Cmd):
             d = None
             if args[lb:rb + 1] != '':
                 d = eval(args[lb:rb + 1])
-            l = args.split(',', 1)
-            objid, args = l[0].strip('"'), l[1]
+            ln = args.split(',', 1)
+            objid, args = ln[0].strip('"'), ln[1]
             if d and type(d) is dict:
                 self.handle_dict(clsname, objid, d)
             else:
                 from shlex import shlex
                 args = args.replace(',', ' ', 1)
-                l = list(shlex(args))
-                l[0] = l[0].strip('"')
-                self.do_update(" ".join([clsname, objid, l[0], l[1]]))
+                ln = list(shlex(args))
+                ln[0] = ln[0].strip('"')
+                self.do_update(" ".join([clsname, objid, ln[0], ln[1]]))
 
     def handle_dict(self, clsname, objid, d):
         """handle dictionary update"""

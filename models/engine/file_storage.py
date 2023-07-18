@@ -37,8 +37,8 @@ class FileStorage:
         Args:
             obj: The object to be added.
         """
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        self.__objects[key] = obj
+        class_name = obj.__class__.__name__
+        self.__objects[f"{class_name}.{obj.id}"] = obj
 
     def save(self):
         """
@@ -54,7 +54,8 @@ class FileStorage:
     def reload(self):
         """
         Deserializes the JSON file and updates the objects dictionary.
-        If the JSON file (__file_path) exists it reads the file and loads objects.
+        If the JSON file (__file_path) exists it reads the file
+        and loads objects.
         If the file doesn't exist, it does nothing.
         """
         clslist = {
@@ -75,8 +76,3 @@ class FileStorage:
                     self.__objects[key] = globals()[class_name](**value)
         except FileNotFoundError:
             pass
-
-
-if __name__ == "__main__":
-    storage = FileStorage()
-    storage.reload()

@@ -18,7 +18,7 @@ class Test_City(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        self.city = None
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +76,14 @@ class Test_City(unittest.TestCase):
         self.assertEqual(cty.created_at, date)
         self.assertEqual(cty.updated_at, date)
 
+    def test_attributes_initialization(self):
+        """tests attr initialization"""
+        self.assertEqual(self.city.state_id, "")
+        self.assertEqual(self.city.name, "")
+        self.assertTrue(hasattr(self.city, "id"))
+        self.assertTrue(hasattr(self.city, "created_at"))
+        self.assertTrue(hasattr(self.city, "updated_at"))
+
     def test_id_is_str(self):
         """checks if id data type"""
         self.assertEqual(str, type(City().id))
@@ -118,6 +126,14 @@ class Test_City(unittest.TestCase):
         cty2 = City()
         self.assertNotEqual(cty1.__str__(), cty2.__str__())
 
+    def test_str_method(self):
+        """tests the str method"""
+        cty_str = str(self.city)
+        self.assertIn("[City]", cty_str)
+        self.assertIn("id", cty_str)
+        self.assertIn("created_at", cty_str)
+        self.assertIn("updated_at", cty_str)
+
     def test_save(self):
         """tests the effectivity of timestamp updates"""
         cty = City()
@@ -145,6 +161,13 @@ class Test_City(unittest.TestCase):
         ctyid = "City." + cty.id
         with open("file.json", "r") as file:
             self.assertIn(ctyid, file.read())
+
+    def test_save_method(self):
+        """tests the save method"""
+        updated_at_1 = self.city.updated_at
+        self.city.save()
+        updated_at_2 = self.city.updated_at
+        self.assertNotEqual(updated_at_1, updated_at_2)
 
     def test_to_dict(self):
         """Tests the expected output"""

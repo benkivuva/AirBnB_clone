@@ -18,7 +18,7 @@ class Test_Review(unittest.TestCase):
 
     def tearDown(self):
         """Clean up the test env after each test case if needed"""
-        pass
+        self.review = None
 
     def test_init_with_arguments(self):
         """Test initialization with arguments"""
@@ -76,6 +76,15 @@ class Test_Review(unittest.TestCase):
         self.assertEqual(rv.created_at, date)
         self.assertEqual(rv.updated_at, date)
 
+    def test_attributes_initialization(self):
+        """test attr initialization"""
+        self.assertEqual(self.review.place_id, "")
+        self.assertEqual(self.review.user_id, "")
+        self.assertEqual(self.review.text, "")
+        self.assertTrue(hasattr(self.review, "id"))
+        self.assertTrue(hasattr(self.review, "created_at"))
+        self.assertTrue(hasattr(self.review, "updated_at"))
+
     def test_id_is_str(self):
         """checks if id data type"""
         self.assertEqual(str, type(Review().id))
@@ -118,6 +127,14 @@ class Test_Review(unittest.TestCase):
         rv2 = Review()
         self.assertNotEqual(rv1.__str__(), rv2.__str__())
 
+    def test__str__method(self):
+        """tests the str() method"""
+        rv_str = str(self.review)
+        self.assertIn("[Review]", rv_str)
+        self.assertIn("id", rv_str)
+        self.assertIn("created_at", rv_str)
+        self.assertIn("updated_at", rv_str)
+
     def test_save(self):
         """tests the effectivity of timestamp updates"""
         rv = Review()
@@ -145,6 +162,13 @@ class Test_Review(unittest.TestCase):
         rvid = "Review." + rv.id
         with open("file.json", "r") as file:
             self.assertIn(rvid, file.read())
+
+    def test_save_method(self):
+        """tests the save() method"""
+        updated_at_1 = self.review.updated_at
+        self.review.save()
+        updated_at_2 = self.review.updated_at
+        self.assertNotEqual(updated_at_1, updated_at_2)
 
     def test_to_dict(self):
         """Tests the expected output"""
